@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- <link rel="stylesheet" href="globals.css" /> -->
+  <!-- <link rel="stylesheet" href="style.css" /> -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div >
+    <canvas id="personChart" width="800" height="400"></canvas>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.2.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.2.0/firebase-database.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration here (Do not use the existing configuration)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBpRpgccvy7JN865L7mQ9jPh4c64ce7t-Q",
+      authDomain: "bikunometer-6a9b1.firebaseapp.com",
+      databaseURL: "https://bikunometer-6a9b1-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "bikunometer-6a9b1",
+      storageBucket: "bikunometer-6a9b1.appspot.com",
+      messagingSenderId: "804334379670",
+      appId: "1:804334379670:web:938a1ca75bf4ac235c58b7"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // getting reference to the database
+    var database = firebase.database();
+
+    //getting reference to the data we want
+    const dataRef = ref(database, 'Halte-FT/2023-11-05');
+    var dataRef1 = database.ref('Halte-FT/current/Person');
+    var dataRef2 = database.ref('Halte-FT/current/Bus');
+
+    //fetch the data
+    dataRef1.on('value', function (getdata1) {
+      var person = getdata1.val();
+      document.getElementById('person').innerHTML = person;
+    })
+
+    dataRef2.on('value', function (getdata2) {
+      var bus = getdata2.val();
+      document.getElementById('bus').innerHTML = bus;
+
+      // Tambahkan kondisi untuk menampilkan/menyembunyikan elemen frame
+      var frameImage = document.getElementById('frameImage');
+      var statusContainer = document.getElementById('statusContainer');
+
+      if (bus === 1) {
+        frameImage.style.display = 'block';
+        // Ubah teks status jika bus bernilai 1
+        document.getElementById('status').innerHTML = "Ada Bikun Datang!";
+        // Ubah warna background jika bus bernilai 1 (hijau)
+        statusContainer.style.backgroundColor = 'lawngreen';
+      } else {
+        frameImage.style.display = 'none';
+        // Ubah teks status jika bus bernilai 0
+        document.getElementById('status').innerHTML = "Tidak Ada Bikun~";
+        // Ubah warna background jika bus bernilai 0 (merah)
+        statusContainer.style.backgroundColor = 'red';
+      }
+    })
+
+    onValue(dataRef, (snapshot) => {
+      const data = snapshot.val();
+
+      // Ubah data menjadi format yang sesuai untuk Chart.js
+      const labels = Object.keys(data).map(time => time);
+      const personsData = Object.values(data).map(item => item.person);
+
+      // Buat dan tampilkan grafik menggunakan Chart.js
+      const ctx = document.getElementById('personChart').getContext('2d');
+      const personChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Jumlah Orang',
+            data: personsData,
+            borderColor: 'rgba(75, 192, 192, 1)', // Warna garis grafik
+            borderWidth: 2,
+            fill: false,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'minute', // Sesuaikan dengan interval waktu yang sesuai
+              },
+            },
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    });
+
+
+  </script>
+</body>
+
+</html>

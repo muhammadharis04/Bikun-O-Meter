@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="globals.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="iphone" style="background-color:cornflowerblue;">
+    <div class="overlap-wrapper" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+      <div class="overlap">
+        <div class="rectangle"></div>
+        <img class="group" src="img/group-16.png" />
+        <div class="text-wrapper">Bikun O'Meter</div>
+        <div class="div">Halte Teknik</div>
+        <div class="group-2">
+          <div class="overlap-group">
+            <div class="text-wrapper-2" style="font-size: 12.5px;">Jumlah Orang di Halte</div>
+          </div>
+          <div class="overlap-group-wrapper">
+            <div class="overlap-group-2">
+              <div class="rectangle-2">
+                <p class="value" id="person" style="margin-top: 5px;"> 9 </p>
+                <p class="value" id="bus" style="display: none;"> 0 </p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="group-3">
+          <div class="overlap-2">
+            <div class="text-wrapper-4">Ramai</div>
+            <div class="text-wrapper-5">Sepi</div>
+            <div class="overlap-3">
+              <img class="img" src="img/rectangle-6.svg" />
+              <div class="rectangle-3"></div>
+            </div>
+          </div>
+          <div class="div-wrapper">
+            <div class="overlap-group-3">
+              <div class="rectangle-4"></div>
+              <div class="text-wrapper-2" style="font-size: 12.5px;">Tingkat Keramaian</div>
+            </div>
+          </div>
+        </div>
+        <div class="group-4">
+          <div class="overlap-4">
+            <div class="rectangle-5"></div>
+            <div class="rectangle-6"></div>
+            <div class="rectangle-7"></div>
+            <div class="rectangle-8"></div>
+            <div class="rectangle-9"></div>
+            <img class="rectangle-10" src="img/rectangle-29.svg" />
+            <div class="text-wrapper-6">FTUI</div>
+          </div>
+          <div class="rectangle-11"></div>
+          <div class="overlap-5">
+            <div class="rectangle-12"></div>
+            <div class="rectangle-13"></div>
+            <div class="rectangle-14"></div>
+          </div>
+        </div>
+        <div class="group-5">
+          <div class="overlap-6" id="statusContainer">
+            <div class="text-wrapper-7" id="status" style="margin-top: 3px;margin-left: 10px; margin-top:4.5px;">Status
+              Bikun</div>
+          </div>
+        </div>
+        <img class="mask-group" src="img/mask-group.png" />
+        <div class="group-6">
+          <div class="overlap-7">
+            <div class="text-wrapper-8">About</div>
+            <p class="universitas">
+              <span class="span">Universitas Indonesia , Depok</span> <span class="text-wrapper-9">&nbsp;</span>
+            </p>
+          </div>
+          <div class="overlap-8">
+            <p class="selamat-datang-di">
+              Selamat datang di Bikun O&#39;Meter, sebuah proyek Capstone yang dirancang khusus untuk memberikan
+              informasi tentang kondisi di halte saat ini
+            </p>
+            <p class="question-and">Question and Feedback ? <br />Contact us at :</p>
+            <div class="text-wrapper-10">bikunometer@gmail.com</div>
+          </div>
+        </div>
+        <img id="frameImage" class="frame" src="img/frame-1.svg" />
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.2.0/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration here (Do not use the existing configuration)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBpRpgccvy7JN865L7mQ9jPh4c64ce7t-Q",
+      authDomain: "bikunometer-6a9b1.firebaseapp.com",
+      databaseURL: "https://bikunometer-6a9b1-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "bikunometer-6a9b1",
+      storageBucket: "bikunometer-6a9b1.appspot.com",
+      messagingSenderId: "804334379670",
+      appId: "1:804334379670:web:938a1ca75bf4ac235c58b7"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // getting reference to the database
+    var database = firebase.database();
+
+    //getting reference to the data we want
+    var dataRef1 = database.ref('Halte-FT/current/Person');
+    var dataRef2 = database.ref('Halte-FT/current/Bus');
+
+    //fetch the data
+    dataRef1.on('value', function (getdata1) {
+      var person = getdata1.val();
+      if (person < 10) {
+        document.getElementById('person').innerHTML = '0' + person;
+      } else {
+        document.getElementById('person').innerHTML = person;
+
+      }
+    })
+
+    dataRef2.on('value', function (getdata2) {
+      var bus = getdata2.val();
+      document.getElementById('bus').innerHTML = bus;
+
+      // Tambahkan kondisi untuk menampilkan/menyembunyikan elemen frame
+      var frameImage = document.getElementById('frameImage');
+      var statusContainer = document.getElementById('statusContainer');
+
+      if (bus === 1) {
+        frameImage.style.display = 'block';
+        // Ubah teks status jika bus bernilai 1
+        document.getElementById('status').innerHTML = "Ada Bikun Datang!";
+        // Ubah warna background jika bus bernilai 1 (hijau)
+        statusContainer.style.backgroundColor = 'lawngreen';
+      } else {
+        frameImage.style.display = 'none';
+        // Ubah teks status jika bus bernilai 0
+        document.getElementById('status').innerHTML = "Tidak Ada Bikun~";
+        // Ubah warna background jika bus bernilai 0 (merah)
+        statusContainer.style.backgroundColor = 'red';
+      }
+    })
+
+
+  </script>
+</body>
+
+</html>
